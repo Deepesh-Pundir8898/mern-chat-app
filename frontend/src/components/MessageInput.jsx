@@ -1,11 +1,13 @@
 import { useRef, useState } from "react";
 import { useChatStore } from "../store/useChatStore";
-import { Image, Send, X } from "lucide-react";
+import { Image, Send, Smile, X } from "lucide-react";
 import toast from "react-hot-toast";
+import EmojiPicker from "emoji-picker-react";
 
 const MessageInput = () => {
   const [text, setText] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
+  const [showEmoji, setEmoji] = useState(false);
   const fileInputRef = useRef(null);
   const { sendMessage } = useChatStore();
 
@@ -40,6 +42,7 @@ const MessageInput = () => {
 
       // Clear form
       setText("");
+      setEmoji(false);
       setImagePreview(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
     } catch (error) {
@@ -70,6 +73,27 @@ const MessageInput = () => {
       )}
 
       <form onSubmit={handleSendMessage} className="flex items-center gap-2">
+        {showEmoji && (
+          <div
+            className="absolute bottom-[15%] z-50 p-2 border border-zinc-700 bg-base-300 rounded-lg shadow-lg"
+            style={{
+              width: "45%",
+              height: "50%",
+              backgroundColor: "#1e1e1e",
+              fontSize: "0.5rem!important",
+            }}
+          >
+            <EmojiPicker
+              style={{
+                width: "100%",
+                height: "100%",
+              }}
+              onEmojiClick={(e) => {
+                setText((prev) => prev + e.emoji);
+              }}
+            />
+          </div>
+        )}
         <div className="flex-1 flex gap-2">
           <input
             type="text"
@@ -95,6 +119,15 @@ const MessageInput = () => {
             <Image size={20} />
           </button>
         </div>
+        <button
+          type="button"
+          className="btn btn-sm btn-circle"
+          onClick={(e) => {
+            setEmoji((prev) => !prev);
+          }}
+        >
+          <Smile size={22} />
+        </button>
         <button
           type="submit"
           className="btn btn-sm btn-circle"
